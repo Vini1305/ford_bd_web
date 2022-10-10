@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Customer{
+  id String @id() @default(uuid())
+  nome String
+
+  Veiculo Veiculo[]
+  Cadastro Cadastro[]
+
+  @@map("customer")
+}
+
+model Cadastro{
+  id String @id() @default(uuid())
+  login String 
+  senha String 
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  customerId String @unique
+
+  @@map("cadastro")
+}
+
+model Veiculo{
+  id String @id() @default(uuid())
+  modelo String
+  marca String
+  placa String @unique 
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  customerId String @unique
+
+  Trajeto Trajeto[]
+
+  @@map("veiculo")
+}
+
+model Trajeto{
+  id String @id() @default(uuid())
+  partida String
+  chegada String
+  pontuacao Int
+
+  veiculo Veiculo @relation(fields: [veiculoId], references: [id])
+  veiculoId String
+
+  Buraco Buraco[]
+
+  @@map("trajeto")
+}
+
+model Buraco{
+  id String @id() @default(uuid())
+
+  trajeto Trajeto @relation(fields: [trajetoId], references: [id])
+  trajetoId String
+
+  @@map("buraco")
+}
+
